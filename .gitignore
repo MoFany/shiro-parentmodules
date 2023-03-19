@@ -1,0 +1,7 @@
+# Project exclude paths
+/01-shiro-hello/target/
+/02-shiro-web-hello/target/
+/03-shiro-realm/target/
+/04-shiro-realm-encryption/target/
+/05-shiro-javaWeb/target/
+/05-shiro-medical/target/

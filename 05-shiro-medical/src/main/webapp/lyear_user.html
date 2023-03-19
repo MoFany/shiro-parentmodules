@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>文档列表 - 光年(Light Year Admin)后台管理系统模板</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="keywords" content="LightYear,光年,后台模板,后台管理系统,光年HTML模板">
+    <meta name="description" content="LightYear是一个基于Bootstrap v3.3.7的后台管理系统的HTML模板。">
+    <meta name="author" content="yinqi">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="static/css/style.min.css" rel="stylesheet">
+    <link href="static/css/animate.css" rel="stylesheet">
+    <!--  弹窗样式-->
+    <link href="static/js/jconfirm/jquery-confirm.min.css" rel="stylesheet">
+    <link href="static/css/dropdowntree.css" rel="stylesheet">
+    <!--    字体引入-->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+<!--要挂载的模型对象-->
+<div id="app" class="container-fluid p-t-15">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-toolbar clearfix">
+                    <form class="pull-right search-bar" method="get" action="#!" role="form">
+                        <div class="input-group">
+                            <div class="input-group-btn">
+                                <input type="hidden" name="search_field" id="search-field" value="title">
+                                <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown"
+                                        type="button" aria-haspopup="true" aria-expanded="false">
+                                    标题 <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="javascript:void(0)" data-field="title">标题</a></li>
+                                    <li><a tabindex="-1" href="javascript:void(0)" data-field="cat_name">栏目</a></li>
+                                </ul>
+                            </div>
+                            <input type="text" class="form-control" value="" name="keyword" placeholder="请输入名称">
+                        </div>
+                    </form>
+                    <div class="toolbar-btn-action">
+                        <a class="btn btn-primary m-r-5" href="#!" @click="openAddUser"><i class="mdi mdi-plus"></i> 新增</a>
+                        <a class="btn btn-success m-r-5" href="#!"><i class="mdi mdi-check"></i> 启用</a>
+                        <a class="btn btn-warning m-r-5" href="#!"><i class="mdi mdi-block-helper"></i> 禁用</a>
+                        <a class="btn btn-danger" href="#!" @click="deleteUsers"><i class="mdi mdi-window-close"></i> 删除</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <label class="lyear-checkbox checkbox-primary">
+                                        <input type="checkbox" id="check-all"><span></span>
+                                    </label>
+                                </th>
+                                <th>用户名</th>
+                                <th>昵称</th>
+                                <th>邮箱</th>
+                                <th>手机号码</th>
+                                <th>性别</th>
+                                <th>头像</th>
+                                <th>状态</th>
+                                <th>登录IP</th>
+                                <th>登录日期</th>
+                                <th>修改人</th>
+                                <th>修改日期</th>
+                                <th>创建人</th>
+                                <th>创建日期</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <!--              数据获取-->
+                            <tr v-for="user in userList">
+                                <!-- 用户id不显示-->
+                                <td>
+                                    <label class="lyear-checkbox checkbox-primary">
+                                        <input type="checkbox" name="ids" :value="user.user_id"><span></span>
+                                    </label>
+                                </td>
+                                <td style="display: none">{{user.user_id}}</td>
+                                <td>{{user.user_name}}</td>
+                                <td>{{user.nick_name}}</td>
+                                <td>{{user.email}}</td>
+                                <td>{{user.phonenumber}}</td>
+                                <!--              奇数表示男，偶数表示女    -->
+                                <td><span
+                                        :class="['label',user.sex===0?'label-success':user.sex===1?'label-danger':'label-default']">{{user.sex===0?'男':(user.sex==1?'女':'保密')}}</span>
+                                </td>
+                                <!--                  头像-->
+                                <td><img :src="user.avatar" alt="用户头像"></td>
+                                <td><span
+                                        :class="['label',user.status==0?'label-pink':(user.status==1?'label-cyan':'label-secondary')]">{{user.status==0?'休闲':(user.status==1?'工作':'暂停')}}</span>
+                                </td>
+                                <td>{{user.login_ip}}</td>
+                                <td>{{user.login_date}}</td>
+                                <td>{{user.create_by}}</td>
+                                <td>{{user.create_time}}</td>
+                                <td>{{user.update_by}}</td>
+                                <td>{{user.update_time}}</td>
+                                <td><font class="text-success">正常</font></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i
+                                                class="mdi mdi-pencil"></i></a>
+                                        <a class="btn btn-xs btn-default" href="#!" title="查看" data-toggle="tooltip"><i
+                                                class="mdi mdi-eye"></i></a>
+                                        <!--                      删除操作-->
+                                        <a class="btn btn-xs btn-default" href="#!" title="删除" data-toggle="tooltip"
+                                           @click="deleteUser(user)"><i class="mdi mdi-window-close"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--          分页查询-->
+                    <ul class="pagination">
+                        <li class="disabled"><span>«</span></li>
+                        <li v-for="item in totalPage"><a href="#" @click="queryUserByPage(item)">{{item}}</a></li>
+                        <li><a href="#!">»</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--  其余内容-->
+    <!-- 添加用户信息的模态框-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #33cabb">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">添加用户信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="sr-only" for="example-if-useraname">用户名</label>
+                        <input class="form-control" type="email" id="example-if-useraname" name="example-if-email"
+                               placeholder="请输入用户名.." v-model="user.user_name">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="example-if-nickname">昵称</label>
+                        <input class="form-control" type="email" id="example-if-nickname" name="example-if-email"
+                               placeholder="请输入昵称.." v-model="user.nick_name">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only">性别</label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sex" id="inlineRadio1" v-model="user.sex" value="0"> 男
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sex" id="inlineRadio2" v-model="user.sex" value="1"> 女
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sex" id="inlineRadio3" v-model="user.sex" value="2"> 保密
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="example-if-email">邮箱</label>
+                        <input class="form-control" type="email" id="example-if-email" name="example-if-email"
+                               placeholder="请输入邮箱.." v-model="user.email">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="example-if-phone">手机号码</label>
+                        <input class=" form-control" type="text" id="example-if-phone" name="example-if-password"
+                               placeholder="请输入手机号码.." v-model="user.phonenumber">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="example-if-dept">选择部门</label>
+                        <input class=" form-control" type="text" id="example-if-dept" name="example-if-password"
+                               placeholder="-----------选择部门-----------"
+                               :dept_id="user.dept_id" @click="openDepartment" :value="user.dept_name">
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" id="example-textarea-input" name="example-textarea-input"
+                                  rows="6" placeholder="说明.." v-model="user.remark"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="addUser">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    部门信息展示的模态框-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog modal-small" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: coral">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">部门列表</h4>
+                </div>
+                <div class="modal-body" style="height: 600px" id="departmentTreeBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="sureDepartment">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="static/js/jquery.min.js"></script>
+<!--jquery弹窗-->
+<script type="text/javascript" src="static/js/jconfirm/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="static/js/main.min.js"></script>
+<!--通知消息-->
+<script type="text/javascript" src="static/js/bootstrap-notify.min.js"></script>
+<script type="text/javascript" src="static/js/lightyear.js"></script>
+<!--vue-->
+<script type="text/javascript" src="static/js/vue.global.js"></script>
+<!--axios-->
+<script type="text/javascript" src="static/js/axios.min.js"></script>
+<!---->
+<script type="text/javascript" src="static/js/dropdowntree.js"></script>
+<!---->
+<script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/qs/6.11.0/qs.js"></script>
+<!--api.js-->
+<script type="text/javascript" src="static/js/api.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('.search-bar .dropdown-menu a').click(function () {
+            var field = $(this).data('field') || '';
+            $('#search-field').val(field);
+            $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+        });
+    });
+</script>
+<!--自定义-->
+<script>
+    const {createApp} = Vue;
+    const mainApp = createApp({
+        setup() {
+            let {ref, reactive, computed, onMounted, toRef} = Vue;
+            //用户列表
+            const userList = ref([]);
+            //当前页
+            const currentPage = ref(1);
+            //总页数
+            const totalPage = ref();
+            //创建用户
+            const user = reactive({});
+
+            /**
+             * 查询方法
+             * 抽取封装函数
+             * */
+            let queryUserByPage = (currentPage) => {
+                //直接调用写好的接口函数
+                findUserByPage(currentPage).then(response => {
+                    console.log("响应结果为：");
+                    console.log(response.data)
+                    //获取到用户数据
+                    userList.value = response.data.userList;
+                    totalPage.value = response.data.page.totalPage
+                })
+            };
+
+            /**
+             * 异步查询数据
+             * */
+            onMounted(() => {
+                //分页查询默认至第一页
+                queryUserByPage(currentPage.value);
+            });
+
+            /**
+             * 删除用户的方法
+             * */
+            let deleteUser = (user) => {
+                console.log('要删除的用户：' + user.user_id);
+                //删除之前使用bootstrap弹窗用来确认删除操作防止误操作
+                jQuery.alert({
+                    title: '确认是否删除用户',
+                    content: `是否删除<span style="color: red">${user.user_name}</span>的信息`,
+                    buttons: {
+                        confirm: {
+                            text: '确认',
+                            btnClass: 'btn-primary',
+                            action: function () {
+                                //去删除数据
+                                deleteUserById(user.user_id).then((response) => {
+                                    if (response.code === 2006) {
+                                        //删除成功并弹出提示框
+                                        lightyear.notify(response.message, 'success', 1000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                                        //自动刷新数据
+                                        queryUserByPage(currentPage.value);
+                                    } else {
+                                        //删除失败并提示
+                                        lightyear.notify(response.message, 'danger', 1000, 'mdi mdi-emoticon-sad', 'top', 'center');
+                                    }
+                                });
+                            }
+                        },
+                        cancel: {
+                            text: '取消',
+                            action: function () {
+                                //取消则什么也不做
+                            }
+                        }
+                    }
+                });
+            };
+
+            /**
+             * 打开用户模态框
+             * */
+            let openAddUser = () => {
+                $('#myModal').modal('toggle');
+            };
+            /**
+             * 打开用户下部门模态框
+             * */
+            let openDepartment = () => {
+                //模态框显示之前先去查询并封装数据
+                $('#exampleModal').on("show.bs.modal", async function (e) {
+                    //查询数据然后填充并展示
+                    let data;
+                    //先获取数据
+                    await makeDepartmentTree().then((response) => {
+                        data = response;
+                    });
+                    //树形菜单的配置项
+                    let options = {
+                        title: "选择部门信息",
+                        data: data,
+                        maxHeight: 3000,
+                        selectChildren: true,
+                        clickHandler: function (element) {
+                            console.log($(element).GetParents());
+                        },
+                        checkHandler: function (element) {
+                            //将选中元素的兄弟元素样式改为不选中就可以了
+                            $(element).siblings('li').find('i').removeClass('fa-check-square-o').addClass('fa-square-o');
+                            //将值填充给输入框
+                            user.dept_name = $(element).find('a').first().text();
+                            user.dept_id = $(element).attr('data-dept-id');
+                        },
+                        closedArrow: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
+                        openedArrow: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
+                        multiSelect: true,
+                    };
+                    //动态添加标签
+                    $('#departmentTreeBody').html('<div class="dropdown dropdown-tree" id="departmentTree"></div>');
+                    //添加下拉菜单
+                    $("#departmentTree").DropDownTree(options);
+                });
+                //  显示模态框
+                $('#exampleModal').modal('show');
+            };
+            /**
+             * 执行插入用户的操作
+             * */
+            let addUser = () => {
+                console.log('----------addUser---------')
+                insertUser(user).then((response) => {
+                    if (response.code === 2008) {
+                        //数据添加
+                        lightyear.notify(response.message, 'success', 1000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                        //自动刷新页面数据
+                        queryUserByPage(currentPage.value)
+                        //添加完成后关闭模态框
+                        $("#myModal").modal('hide');
+                    } else {
+                        //数据添加异常
+                        lightyear.notify(response.message, 'danger', 1000, 'mdi mdi-emoticon-sad', 'top', 'center');
+                    }
+                });
+            };
+            /**
+             * 确定选择的部门，发送消息
+             * */
+            let sureDepartment = () => {
+                $('#exampleModal').modal('hide');
+            };
+
+            /**
+             * 批量删除用户
+             * */
+            let deleteUsers = () => {
+                console.log('-----------批量删除-----------');
+                //用户的id数组
+                let userIds = [];
+                let inps = $('[name=ids]:checked');
+                $.each(inps, (index, item) => {
+                    let ids = $(item).attr('value');
+                    userIds.push(ids);
+                });
+                //输出批量删除的数据
+                console.log(Qs.stringify({ids: userIds}, {indices: false}));
+                //自动做参数的拼接，然后执行批量删除操作
+                removeUserByIds(Qs.stringify({ids: userIds}, {indices: false})).then((response) => {
+                    console.log(response)
+                    //响应成功
+                    if (response.code === 2009) {
+                        lightyear.notify(response.message, 'success', 1000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                        //自动刷新数据
+                        queryUserByPage(currentPage.value);
+                    } else {
+                        //响应失败
+                        lightyear.notify(response.message, 'danger', 1000, 'mdi mdi-emoticon-sad', 'top', 'center');
+                    }
+                });
+            };
+
+            //返回各个函数的引用
+            return {
+                userList,
+                totalPage,
+                queryUserByPage,
+                deleteUser,
+                user,
+                addUser,
+                openAddUser,
+                openDepartment,
+                sureDepartment,
+                deleteUsers
+            };
+        }
+    });
+    mainApp.mount("#app");
+</script>
+</body>
+</html>
